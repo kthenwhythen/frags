@@ -24,6 +24,11 @@ async fn manual_hello() -> impl Responder {
     HttpResponse::Ok().body("hey there!")
 }
 
+#[get("/all")]
+async fn show_users() -> impl Responder {
+    HttpResponse::Ok().body("users: you and someone")
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let app_state= web::Data::new(AppState {
@@ -34,6 +39,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(app_state.clone())
+            .service(web::scope("/users").service(show_users))
             .service(hello)
             .service(echo)
             .route("/hey", web::get().to(manual_hello))
