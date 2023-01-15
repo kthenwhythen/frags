@@ -1,5 +1,5 @@
 use std::sync::Mutex;
-
+mod resources;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard};
 
 struct AppState {
@@ -38,6 +38,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .configure(resources::app::config)
             .app_data(app_state.clone())
             .service(web::scope("/users").service(show_users))
             .service(hello)
