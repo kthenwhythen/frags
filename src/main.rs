@@ -1,6 +1,7 @@
-use std::sync::Mutex;
+use std::{sync::Mutex, time::Duration};
 mod resources;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard};
+use tokio;
 
 struct AppState {
     app_name: String,
@@ -29,6 +30,12 @@ async fn show_users() -> impl Responder {
     HttpResponse::Ok().body("users: you and someone")
 }
 
+#[get("/sleep")]
+async fn sleep() -> impl Responder {
+    tokio::time::sleep(Duration::from_secs(5)).await;
+    HttpResponse::Ok().body("wake")
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let app_state= web::Data::new(AppState {
@@ -49,6 +56,7 @@ async fn main() -> std::io::Result<()> {
                     .guard(guard::Header("Host", "localhost:8080"))
                     .route("", web::get().to(manual_hello))
             )
+            .service(sleep)
     })
     .bind(("0.0.0.0", 8080))?
     .run()
