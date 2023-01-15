@@ -1,7 +1,9 @@
 use std::{sync::Mutex, time::Duration};
-mod resources;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard};
 use tokio;
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod}; 
+
+mod resources;
 
 struct AppState {
     app_name: String,
@@ -32,12 +34,20 @@ async fn show_users() -> impl Responder {
 
 #[get("/sleep")]
 async fn sleep() -> impl Responder {
+    println!("sleep start");
     tokio::time::sleep(Duration::from_secs(5)).await;
+    println!("sleep end");
     HttpResponse::Ok().body("wake")
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("starting frags server...");
+
+    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+    builder.set_private_key_file("key.pem", SslFiletype::PEM).unwrap();
+    builder.set_certificate_chain_file("cert.pem").unwrap();
+
     let app_state= web::Data::new(AppState {
         app_name: String::from("actix web"),
         counter: Mutex::new(0),
@@ -58,7 +68,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(sleep)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind_openssl("0.0.0.0:8080", builder)?
     .run()
     .await
 }
