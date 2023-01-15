@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard};
 
 struct AppState {
     app_name: String,
@@ -42,7 +42,12 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("/users").service(show_users))
             .service(hello)
             .service(echo)
-            .route("/hey", web::get().to(manual_hello))
+            .service(
+                web::scope("/hey")
+                    // guard that filter requests on 'Host' header field
+                    .guard(guard::Header("Host", "localhost:8080"))
+                    .route("", web::get().to(manual_hello))
+            )
     })
     .bind(("0.0.0.0", 8080))?
     .run()
