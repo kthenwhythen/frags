@@ -1,5 +1,5 @@
 use std::{sync::Mutex, time::Duration};
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard};
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard, http::KeepAlive};
 use tokio;
 use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod}; 
 
@@ -68,7 +68,10 @@ async fn main() -> std::io::Result<()> {
             )
             .service(sleep)
     })
-    .bind_openssl("0.0.0.0:8080", builder)?
+    .keep_alive(KeepAlive::Os)
+    .shutdown_timeout(10)
+    // .bind_openssl("0.0.0.0:8080", builder)?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }
