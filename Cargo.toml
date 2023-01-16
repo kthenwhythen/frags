@@ -9,3 +9,4 @@ edition = "2021"
 actix-web = { version = "4", features = ["openssl"]}
 tokio = { version = "1", features = ["full"] }
 openssl = { version = "0.10" }
+serde = { version = "1", features = ["derive"] }

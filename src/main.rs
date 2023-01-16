@@ -1,7 +1,10 @@
+use actix_web::{
+    get, guard, http::KeepAlive, post, web, App, HttpResponse, HttpServer, Responder, Result,
+};
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
+use serde::Deserialize;
 use std::{sync::Mutex, time::Duration};
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder, guard, http::KeepAlive};
 use tokio;
-use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod}; 
 
 mod resources;
 
@@ -10,12 +13,20 @@ struct AppState {
     counter: Mutex<i32>,
 }
 
+#[derive(Deserialize)]
+struct Info {
+    user_id: u32,
+    friend: String,
+}
+
 #[get("/")]
 async fn hello(data: web::Data<AppState>) -> impl Responder {
     let app_name = &data.app_name;
     let mut counter = data.counter.lock().unwrap();
     *counter += 1;
-    HttpResponse::Ok().body(format!("hello world from {app_name}. Request number: {counter}"))
+    HttpResponse::Ok().body(format!(
+        "hello world from {app_name}. Request number: {counter}"
+    ))
 }
 
 #[post("/echo")]
@@ -40,15 +51,25 @@ async fn sleep() -> impl Responder {
     HttpResponse::Ok().body("wake")
 }
 
+#[get("/{user_id}/{friend}")]
+async fn user(info: web::Path<Info>) -> Result<String> {
+    Ok(format!(
+        "Welcome {}, user_id {}!",
+        info.friend, info.user_id
+    ))
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("starting frags server...");
 
     let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
-    builder.set_private_key_file("key.pem", SslFiletype::PEM).unwrap();
+    builder
+        .set_private_key_file("key.pem", SslFiletype::PEM)
+        .unwrap();
     builder.set_certificate_chain_file("cert.pem").unwrap();
 
-    let app_state= web::Data::new(AppState {
+    let app_state = web::Data::new(AppState {
         app_name: String::from("actix web"),
         counter: Mutex::new(0),
     });
@@ -57,14 +78,14 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .configure(resources::app::config)
             .app_data(app_state.clone())
-            .service(web::scope("/users").service(show_users))
+            .service(web::scope("/users").service(show_users).service(user))
             .service(hello)
             .service(echo)
             .service(
                 web::scope("/hey")
                     // guard that filter requests on 'Host' header field
                     .guard(guard::Header("Host", "localhost:8080"))
-                    .route("", web::get().to(manual_hello))
+                    .route("", web::get().to(manual_hello)),
             )
             .service(sleep)
     })
