@@ -1,0 +1,13 @@
+[package]
+name = "gateway-service"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = { version = "4", features = ["openssl"]}
+tokio = { version = "1", features = ["full"] }
+openssl = { version = "0.10" }
+serde = { version = "1", features = ["derive"] }
+utoipa = { version = "2", features = ["yaml", "actix_extras"] }
