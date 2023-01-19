@@ -5,5 +5,5 @@ members = [
   "services/comment-service",
   "services/post-service",
   "services/post-wall-service",
-  "services/redoc-service"
+  "services/docs-service"
 ]

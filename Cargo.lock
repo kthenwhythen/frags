@@ -393,6 +393,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "docs-service"
+version = "0.1.0"
+dependencies = [
+ "actix-web",
+ "openssl",
+ "serde",
+ "tokio",
+ "utoipa",
+]
+
+[[package]]
 name = "encoding_rs"
 version = "0.8.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -877,10 +888,6 @@ checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 dependencies = [
  "getrandom",
 ]
-
-[[package]]
-name = "redoc-service"
-version = "0.1.0"
 
 [[package]]
 name = "redox_syscall"
