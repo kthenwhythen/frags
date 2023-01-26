@@ -1,9 +1,10 @@
 [workspace]
 members = [
   "services/gateway-service",
+  "services/order-service",
+  "services/product-service",
+  "services/recommender-service",
+  "services/review-service",
   "services/user-service",
-  "services/comment-service",
-  "services/post-service",
-  "services/post-wall-service",
   "services/docs-service"
 ]

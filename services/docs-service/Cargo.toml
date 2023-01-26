@@ -10,4 +10,6 @@ actix-web = { version = "4", features = ["openssl"]}
 tokio = { version = "1", features = ["full"] }
 openssl = { version = "0.10" }
 serde = { version = "1", features = ["derive"] }
-utoipa = { version = "2", features = ["yaml", "actix_extras"] }
+utoipa = { version = "2", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "2", features = ["actix-web"] }
+colored = "2.0.0"
