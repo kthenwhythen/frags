@@ -6,3 +6,10 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-web = { version = "4", features = ["openssl"]}
+tokio = { version = "1", features = ["full"] }
+openssl = { version = "0.10" }
+serde = { version = "1", features = ["derive"] }
+utoipa = { version = "2", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "2", features = ["actix-web"] }
+colored = "2.0.0"
