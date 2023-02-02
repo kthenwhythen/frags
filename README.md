@@ -1,3 +1,3 @@
-# Yet another blog backend
+# Yet another e-commerce backend
 
 WIP
